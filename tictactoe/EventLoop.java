@@ -1,63 +1,86 @@
-initialize program state data
+package tictactoe;
 
-if gameState == STANDBY
-  set gameState = GET_X_NAME
+public class EventLoop {
 
-else if gameState == GET_X_NAME
-  get player X name
-  set gameState = GET_O_NAME
+  // Instance variables for the UI and State classes
+  State state = new State();
+  UI ui = new UI();
+  int row, col;
 
-else if gameState == GET_O_NAME
-  get player O name
-  set gameState = GET_X_MOVE
+  public void eventLoop() {
+    while (state.getGameState() != Constants.QUIT_PROGRAM) {
+      int gameState = state.getGameState();
+      if (gameState == Constants.STANDBY) {
+        state.setGameState(Constants.GET_X_NAME);
 
-else if gameState == GET_X_MOVE
-  do
-    get player X's row and column to move
-  while player's inputs and player's move are NOT valid
-  set gameState = MAKE_MOVE
+      } else if (gameState == Constants.GET_X_NAME) {
+        state.setXName(ui.promptForName(Constants.X));
+        state.setGameState(Constants.GET_O_NAME);
+    
+      } else if (gameState == Constants.GET_O_NAME) {
+        state.setOName(ui.promptForName(Constants.O));
+        state.setGameState(Constants.GET_X_MOVE);
+    
+      } else if (gameState == Constants.GET_X_MOVE) {
+        row = ui.getMoveRow(state.getWhoseMove());
+        col = ui.getMoveCol(state.getWhoseMove());
+        if (ui.isLegalMove(state, row, col)) {
+          state.setGameState(Constants.MAKE_MOVE);
+        }
 
-else if gameState == GET_O_MOVE
-  do
-    get player O's row and column to move
-  while player's inputs and player's move are NOT valid
-  set gameState = MAKE_MOVE
+      } else if (gameState == Constants.GET_O_MOVE) {
+        row = ui.getMoveRow(state.getWhoseMove());
+        col = ui.getMoveCol(state.getWhoseMove());
+        if (ui.isLegalMove(state, row, col)) {
+          state.setGameState(Constants.MAKE_MOVE);
+        }
 
-else if gameState == MAKE_MOVE
-  print player's move
-  add player's move to the board
-  set gameState = CHECK_IF_WINNER
+      } else if (gameState == Constants.MAKE_MOVE) {
+        ui.printMove(state, row, col);
+        state.setBoardCell(state.getWhoseMove(), row, col);
+        state.setGameState(Constants.CHECK_IF_WINNER);
 
-else if gameState == CHECK_IF_WINNER
-  if x is a winner
-    set gameState = X_WINS
-  else if o is a winner
-    set gameState = O_WINS
-  else 
-    set gameState = CHECK_IF_TIE
+      } else if (gameState == Constants.CHECK_IF_WINNER) {
+        if (state.isWinner()) {
+          if (state.getWhoseMove() == Constants.X) {
+            state.setGameState(Constants.X_WINS);
+          } else {
+            state.setGameState(Constants.O_WINS);
+          }
+        } else {
+          state.setGameState(Constants.CHECK_IF_TIE);
+        }
 
-else if gameState == CHECK_IF_TIE
-  if game is tied
-    print game tied message
-    set gameState = GAME_OVER
-  else
-    if it is X's turn
-      set gameState = GET_O_MOVE
-    else
-      set gameState = GET_X_MOVE
+      } else if (gameState == Constants.CHECK_IF_TIE) {
+        if (state.isTie()) {
+          ui.printTie();
+          state.setGameState(Constants.GAME_OVER);
+        } else {
+          state.setWhoseMove(state.getWhoseMove() * -1);
+          if (state.getWhoseMove() == Constants.X) {
+            state.setGameState(Constants.GET_X_MOVE);
+          } else {
+            state.setGameState(Constants.GET_O_MOVE);
+          }
+        }
 
-else if gameState == X_WINS
-  print x wins message
-  set gameState = GAME_OVER
+      } else if (gameState == Constants.X_WINS) {
+        ui.printWinner(state);
+        state.setGameState(Constants.GAME_OVER);
+    
+      } else if (gameState == Constants.O_WINS) {
+        ui.printWinner(state);
+        state.setGameState(Constants.GAME_OVER);
 
-else if gameState == O_WINS
-  print o wins message
-  set gameState = GAME_OVER
+      } else if (gameState == Constants.GAME_OVER) {
+        if (ui.startNewGame()) {
 
-else if gameState == GAME_OVER
-  get if players want to play again
-  if YES
-    set gameState = STANDBY
-  else 
-    QUIT PROGRAM
+          state.setGameState(Constants.STANDBY);
+        } else {
+         state.setGameState(Constants.QUIT_PROGRAM);
+        }
+      }
+    }
+  }
+}
 
