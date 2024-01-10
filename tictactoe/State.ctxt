@@ -1,4 +1,8 @@
 #BlueJ class context
 comment0.target=State
 comment0.text=\n\ Tic-Tac-Toe\ state\ variables.\n
-numComments=1
+comment1.params=row\ col
+comment1.target=int\ getBoardCell(int,\ int)
+comment2.params=row\ col\ value
+comment2.target=void\ setBoardCell(int,\ int,\ int)
+numComments=3
